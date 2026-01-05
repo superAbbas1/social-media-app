@@ -2,6 +2,13 @@ const { BlobServiceClient } = require("@azure/storage-blob");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 
+const blobServiceClient = BlobServiceClient.fromConnectionString(
+  process.env.AZURE_STORAGE_CONNECTION_STRING
+);
+
+const containerClient = blobServiceClient.getContainerClient(
+  process.env.AZURE_STORAGE_CONTAINER_NAME
+);
 
 const mediaService = require('../services/mediaService');
 const multer = require('multer');
@@ -51,40 +58,37 @@ const uploadMedia = async (req, res) => {
 
   try {
     if (!req.file) {
-      console.log('Backend: No file uploaded');
-      return res.status(400).json({ error: 'No file uploaded' });
+      return res.status(400).json({ message: "No file uploaded" });
     }
 
-    const { title, caption, location, people, mediaType, userId } = req.body;
+    const blobName =
+      uuidv4() + path.extname(req.file.originalname);
 
-    if (!userId) {
-      return res.status(400).json({ error: 'User ID is required' });
-    }
+    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
-    const fileUrl = `/uploads/${req.file.filename}`;
-
-    console.log('Backend: Processing upload', {
-      title, caption, location, people, mediaType, fileUrl, userId
+    await blockBlobClient.uploadData(req.file.buffer, {
+      blobHTTPHeaders: {
+        blobContentType: req.file.mimetype
+      }
     });
 
-    const mediaData = {
-      userId,
-      mediaType,
-      fileUrl,
-      title,
-      caption,
-      location,
-      people: people ? people.split(',').map(p => p.trim()) : []
-    };
+    const mediaUrl = blockBlobClient.url;
 
-    console.log('Backend: Saving to database', mediaData);
-    const media = await mediaService.createMedia(mediaData);
-    console.log('Backend: Media saved successfully', media._id);
+    const media = new Media({
+      title: req.body.title,
+      caption: req.body.caption,
+      location: req.body.location,
+      people: req.body.people,
+      mediaUrl,
+      mediaType: req.file.mimetype.startsWith("video") ? "video" : "image"
+    });
+
+    await media.save();
 
     res.status(201).json(media);
   } catch (error) {
-    console.error('Backend: Upload error', error);
-    res.status(500).json({ error: error.message });
+    console.error("UPLOAD ERROR:", error);
+    res.status(500).json({ error: "Upload failed" });
   }
 };
 
