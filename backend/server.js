@@ -1,3 +1,5 @@
+console.log("APP ENTRY FILE EXECUTED");
+
 require('dotenv').config();
 const app = require('./app');
 
