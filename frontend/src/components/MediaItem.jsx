@@ -6,6 +6,13 @@ function MediaItem({ media, onRate }) {
   const [rating, setRating] = useState('');
   const [user, setUser] = useState(null);
 
+  const resolveMediaUrl = (url) => {
+    if (!url) return '';
+    if (url.startsWith('http')) return url; // Azure Blob
+    return `http://localhost:5000${url}`;   // legacy local
+  };
+
+
   useEffect(() => {
     // Use the populated user data from the media object
     if (media.userId) {
@@ -51,10 +58,15 @@ function MediaItem({ media, onRate }) {
     <div className="media-item">
       <div className="media-header">
         <img
-          src={user?.profilePicture ? `http://localhost:5000${user.profilePicture}` : '/default-avatar.svg'}
+          src={
+            user?.profilePicture
+              ? resolveMediaUrl(user.profilePicture)
+              : '/default-avatar.svg'
+          }
           alt="Profile"
           className="profile-pic"
         />
+
         <div className="user-info">
           <h4>{user?.firstName} {user?.lastName}</h4>
           <span className="post-time">{new Date(media.createdAt).toLocaleDateString()}</span>
@@ -65,18 +77,20 @@ function MediaItem({ media, onRate }) {
 
       {media.mediaType === 'image' ? (
         <img
-          src={`http://localhost:5000${media.fileUrl}`}
+          src={resolveMediaUrl(media.fileUrl)}
           alt={media.title}
           onClick={handleView}
           className="media-content"
         />
+
       ) : (
         <video
-          src={`http://localhost:5000${media.fileUrl}`}
+          src={resolveMediaUrl(media.fileUrl)}
           controls
           onPlay={handleView}
           className="media-content"
         />
+
       )}
 
       <p className="media-caption">{media.caption}</p>
