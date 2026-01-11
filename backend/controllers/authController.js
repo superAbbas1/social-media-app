@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const uploadToBlob = require('../utils/blob');
 
 // Signup
 const signup = async (req, res) => {
@@ -93,8 +94,13 @@ const updateProfilePicture = async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    user.profilePicture = `/uploads/${req.file.filename}`;
-    console.log('Saving user with new profile picture:', user.profilePicture);
+    // Upload profile picture to Azure Blob Storage
+    console.log('authController: calling uploadToBlob for profile picture:', req.file.originalname);
+    const blobUrl = await uploadToBlob(req.file);
+    console.log('authController: uploadToBlob returned URL:', blobUrl);
+
+    user.profilePicture = blobUrl;
+    console.log('Saving user with new profile picture (blob):', user.profilePicture);
     await user.save();
 
     console.log('Profile picture updated successfully');

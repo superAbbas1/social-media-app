@@ -11,12 +11,15 @@ const containerClient = blobServiceClient.getContainerClient(
 const uploadToBlob = async (file) => {
   const blobName = `${Date.now()}-${file.originalname}`;
   const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+  console.log('blob.js: uploading to Azure Blob container:', process.env.AZURE_STORAGE_CONTAINER_NAME, 'blobName:', blobName);
 
   await blockBlobClient.uploadData(file.buffer, {
     blobHTTPHeaders: {
       blobContentType: file.mimetype
     }
   });
+
+  console.log('blob.js: upload complete. Blob URL:', blockBlobClient.url);
 
   return blockBlobClient.url;
 };

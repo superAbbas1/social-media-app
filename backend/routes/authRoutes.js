@@ -1,20 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const multer = require('multer');
 const { signup, login, updateProfilePicture } = require('../controllers/authController');
-
-// Configure multer for profile picture uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'profile-' + uniqueSuffix + '.' + file.originalname.split('.').pop());
-  }
-});
-
-const upload = multer({ storage });
+// Use memory-storage multer middleware so files go to Azure via controller
+const upload = require('../middleware/upload');
 
 // POST /api/auth/signup
 router.post('/signup', signup);

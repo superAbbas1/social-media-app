@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-// Multer middleware (memory storage for Azure Blob)
-const upload = require('../middleware/upload');
+// Multer middleware exported from controller (memory storage for Azure Blob)
+const { upload } = require('../controllers/mediaController');
 
 // Controllers
 const {

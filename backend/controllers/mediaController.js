@@ -1,7 +1,15 @@
 const mongoose = require('mongoose');
+const multer = require('multer');
 const Media = require('../models/Media');
 const mediaService = require('../services/mediaService');
 const uploadToBlob = require('../utils/blob');
+
+// Define multer upload here and export it so routes import from controller
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage,
+  limits: { fileSize: 50 * 1024 * 1024 } // 50MB
+});
 
 // ===============================
 // GET ALL MEDIA
@@ -19,7 +27,7 @@ const getAllMedia = async (req, res) => {
 // UPLOAD MEDIA (AZURE BLOB ONLY)
 // ===============================
 const uploadMedia = async (req, res) => {
-  console.log('Backend: Upload request received');
+  console.log('Backend: Upload request received (mediaController)');
 
   try {
     if (!req.file) {
@@ -39,7 +47,9 @@ const uploadMedia = async (req, res) => {
     }
 
     // Upload file to Azure Blob Storage
+    console.log('mediaController: calling uploadToBlob for file:', req.file.originalname);
     const fileUrl = await uploadToBlob(req.file);
+    console.log('mediaController: uploadToBlob returned URL:', fileUrl);
 
     const media = await Media.create({
       userId: new mongoose.Types.ObjectId(userId),
@@ -119,5 +129,6 @@ module.exports = {
   uploadMedia,
   searchMedia,
   incrementView,
-  addRating
+  addRating,
+  upload
 };
