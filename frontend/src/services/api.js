@@ -1,7 +1,8 @@
 import axios from 'axios';
 
+// Use environment variable if set, otherwise fallback to Azure URL
 const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api';
+  process.env.REACT_APP_API_BASE_URL || 'https://social-media-backend-api.azurewebsites.net/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,

@@ -3,11 +3,14 @@
   "version": "1.0.0",
   "description": "Frontend for scalable media sharing platform",
   "main": "index.js",
+  "homepage": "https://superAbbas1.github.io/social-media-app",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "dependencies": {
     "axios": "^1.5.0",
