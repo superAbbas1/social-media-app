@@ -68,15 +68,23 @@ function Profile({ currentUser, onUserUpdate }) {
     }
   };
 
+  const profilePicSrc = currentUser.profilePicture?.startsWith('http')
+    ? currentUser.profilePicture
+    : currentUser.profilePicture
+      ? `http://localhost:5000${currentUser.profilePicture}`
+      : '/default-avatar.svg';
+
+
   return (
     <div className="profile">
       <div className="profile-info">
         <div className="profile-header">
           <img
-            src={currentUser.profilePicture ? `http://localhost:5000${currentUser.profilePicture}` : '/default-avatar.svg'}
+            src={profilePicSrc}
             alt="Profile"
             className="profile-pic-large"
           />
+
           <div className="profile-details">
             <h3>{currentUser.firstName} {currentUser.lastName}</h3>
             <p><strong>Email:</strong> {currentUser.email}</p>
