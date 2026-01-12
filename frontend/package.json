@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Frontend for scalable media sharing platform",
   "main": "index.js",
-  "homepage": ".",
+  "homepage": "https://superAbbas1.github.io/social-media-app",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
