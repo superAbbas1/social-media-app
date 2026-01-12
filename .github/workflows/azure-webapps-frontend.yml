@@ -73,8 +73,8 @@ jobs:
             exit 1;
           fi
           echo "$PUBLISH_XML" > frontend-publish.xml
-          if ! grep -q 'msdeploy-site="social-media-frontend"' frontend-publish.xml; then
-            echo "Warning: publish profile does not reference msdeploy-site=\"social-media-frontend\". Please ensure the secret contains the publish profile for the frontend app.";
+          if ! grep -qiE 'msdeploy(site|-site)?="social-media-frontend"|profileName="[^"]*social-media-frontend' frontend-publish.xml; then
+            echo "Warning: publish profile does not reference the frontend app name (msdeploySite/profileName). Please ensure the secret contains the publish profile for the frontend app.";
             # fail early to avoid confusing deploy error
             exit 1;
           fi
